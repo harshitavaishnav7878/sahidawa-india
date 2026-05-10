@@ -44,20 +44,8 @@ Closes #<!-- issue number -->
 
 ## 📸 Screenshots / Demo
 
-<!-- For frontend or UI changes, attach a before/after screenshot or screen recording. 
+<!-- For frontend or UI changes, attach a before/after screenshot or screen recording.
      For backend/ML, paste a sample API response or test output. -->
-
-| Before | After |
-|---|---|
-| | |
-
-## 🧪 How to Test
-
-<!-- Step-by-step instructions to test your changes locally -->
-
-1.
-2.
-3.
 
 ## ✅ Contributor Checklist
 
@@ -67,8 +55,6 @@ Closes #<!-- issue number -->
 - [ ] I have pulled the latest `main` and rebased/merged before this PR
 - [ ] My code follows the patterns in `docs/code-guide.md`
 - [ ] I ran `npm run dev -w web` (frontend) or `npm run dev -w api` (backend) — no build errors
-- [ ] I have NOT committed `.env` or any secret keys
-- [ ] For frontend: I used Tailwind v4 syntax (`bg-linear-to-b`, not `bg-gradient-to-b`)
 - [ ] For backend: All responses return structured JSON `{ success, data, error }`
 - [ ] Screenshots/test output added (for UI or API changes)
 - [ ] I have performed a self-review of my own code
@@ -76,13 +62,10 @@ Closes #<!-- issue number -->
 ## 🎓 GSSoC 2026
 
 - [ ] I am a GSSoC 2026 participant
-- [ ] This PR is for the **Open Source Track**
-- [ ] This PR is for the **Agents for India Track**
-- [ ] This PR uses **Cloudinary** (eligible for Cloudinary bounty points 🏆)
 
 ---
 
-<!-- 
+<!--
   Thank you for contributing to SahiDawa! 🩺
   Built for 1.4 billion Indians — your work matters.
   A maintainer will review within 48 hours.

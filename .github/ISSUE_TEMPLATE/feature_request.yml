@@ -75,14 +75,6 @@ body:
     validations:
       required: false
 
-  - type: textarea
-    id: alternatives
-    attributes:
-      label: Alternatives Considered
-      placeholder: "We could use a cookie instead of localStorage..."
-    validations:
-      required: false
-
   - type: checkboxes
     id: gssoc
     attributes:

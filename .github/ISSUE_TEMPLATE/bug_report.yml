@@ -40,17 +40,6 @@ body:
       required: true
 
   - type: textarea
-    id: reproduction
-    attributes:
-      label: Steps to Reproduce
-      value: |
-        1. Go to '...'
-        2. Click on '...'
-        3. See error
-    validations:
-      required: true
-
-  - type: textarea
     id: expected
     attributes:
       label: Expected Behavior
@@ -58,21 +47,11 @@ body:
     validations:
       required: true
 
-  - type: input
-    id: environment
-    attributes:
-      label: Environment
-      description: Browser, OS, Node/Python version.
-      placeholder: "e.g., Chrome 124 on Android 14 / Node v22 / Python 3.12"
-    validations:
-      required: false
-
   - type: textarea
-    id: logs
+    id: screenshots
     attributes:
-      label: Relevant Logs or Screenshots
-      description: Paste any terminal errors or attach screenshots.
-      render: shell
+      label: Screenshots
+      description: Attach screenshots.
     validations:
       required: false
 
