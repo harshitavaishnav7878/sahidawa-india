@@ -3,6 +3,7 @@ import dotenv from 'dotenv';
 import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
+import { limiter } from './middleware/rateLimit';
 
 // Load environment variables
 dotenv.config();
@@ -15,6 +16,7 @@ app.use(helmet());
 app.use(cors());
 app.use(express.json());
 app.use(morgan('dev'));
+app.use(limiter);
 
 // --- ADDED ROUTES ---
 
