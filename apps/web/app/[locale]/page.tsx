@@ -19,25 +19,19 @@ import {
 import { Link } from "@/i18n/routing";
 
 import { useTranslations } from 'next-intl';
+import { useRouter, useParams } from "next/navigation";
+import LanguageSwitcher from "./LanguageSwitcher";
+import Footer from "./components/Footer";
 
 export default function SahiDawaHome() {
+  const router = useRouter();
+  const params = useParams();
+  const locale = params.locale;
   const t = useTranslations('Index');
 
-  import { useRouter, useParams } from "next/navigation";
-  import { useTranslations } from "next-intl";
-  import LanguageSwitcher from "./LanguageSwitcher";
-  import Footer from "./components/Footer";
-
-  export default function SahiDawaHome() {
-    const router = useRouter();
-    const params = useParams();
-    const locale = params.locale;
-    const t = useTranslations("Home");
-    const nav = useTranslations("Navigation");
-
-    const handleNavigation = (path: string) => {
-      router.push(`/${locale}/${path}`);
-    };
+  const handleNavigation = (path: string) => {
+    router.push(`/${locale}/${path}`);
+  };
 
 
     return (
@@ -344,6 +338,13 @@ export default function SahiDawaHome() {
           </div>
           <span className="text-[11px] font-semibold">Scans</span>
         </button>
+
+        <Link href="/map" className="flex flex-col items-center gap-1.5 w-16 group text-slate-400 hover:text-amber-600 transition-colors">
+          <div className="group-hover:-translate-y-1 transition-transform">
+            <MapPin size={24} strokeWidth={2} />
+          </div>
+          <span className="text-[11px] font-semibold">Map</span>
+        </Link>
         <button className="flex flex-col items-center gap-1.5 w-16 group text-slate-400 hover:text-slate-600 transition-colors">
           <div className="relative group-hover:-translate-y-1 transition-transform">
             <Bell size={24} strokeWidth={2} />
