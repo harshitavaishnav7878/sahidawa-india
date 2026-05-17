@@ -17,10 +17,11 @@ import {
   Search,
   MessageCircle,
 } from "lucide-react";
-import { Link } from "@/i18n/routing";
-import { useTranslations } from 'next-intl';
+
 import { useRouter, useParams } from "next/navigation";
 import { supabase } from '../../../api/src/db/client';
+import { Link } from "@/i18n/routing";
+import { useTranslations } from "next-intl";
 import LanguageSwitcher from "./LanguageSwitcher";
 import Footer from "./components/Footer";
 
@@ -87,7 +88,8 @@ export default function SahiDawaHome() {
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 font-sans selection:bg-emerald-200">
-      {/* Navigation */}
+
+      {/* ── Top Navigation ── */}
       <header className="sticky top-0 z-50 w-full border-b border-slate-200 bg-white/80 backdrop-blur-lg">
         <div className="container mx-auto px-4 md:px-6 h-16 flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -105,22 +107,38 @@ export default function SahiDawaHome() {
           <div className="flex items-center gap-2 md:gap-4">
             <nav className="hidden lg:flex items-center gap-6 text-sm font-semibold text-slate-600" aria-label="Main navigation">
               <button className="hover:text-emerald-600 transition-colors">
-                {tNav('how_it_works')}
+                {tNav("how_it_works")}
               </button>
               <button className="hover:text-emerald-600 transition-colors">
-                {tNav('alerts')}
+                {tNav("alerts")}
               </button>
               <Link href="/map" className="hover:text-emerald-600 transition-colors">
-                {tNav('pharmacy_map')}
+                {tNav("pharmacy_map")}
+              </Link>
+              <Link href="/reports/me" className="hover:text-emerald-600 transition-colors flex items-center gap-1">
+                <History size={14} /> My Reports
               </Link>
             </nav>
+
+            <button
+              onClick={() => handleNavigation("health")}
+              className="flex items-center gap-2 text-sm font-semibold px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-full hover:shadow-lg hover:scale-105 transition-all duration-200"
+              aria-label="Open AI Health Assistant"
+            >
+              <MessageCircle size={16} />
+              <span className="hidden sm:inline">AI Health Assistant</span>
+              <span className="sm:hidden">AI Chat</span>
+            </button>
+
             <LanguageSwitcher />
           </div>
         </div>
       </header>
 
+      {/* ── Main ── */}
       <main className="container mx-auto px-4 pt-8 pb-24 md:pb-12 max-w-6xl">
-        {/* Hero Section */}
+
+        {/* Hero */}
         <div className="text-center space-y-6 py-12 md:py-20">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-50 text-emerald-700 text-sm font-bold border border-emerald-100 animate-in fade-in slide-in-from-bottom-4 duration-700">
             <span className="relative flex h-2 w-2">
@@ -130,97 +148,134 @@ export default function SahiDawaHome() {
             GSSoC 2026 Open Source Project
           </div>
           <h2 className="text-4xl md:text-6xl font-black tracking-tight text-slate-900 leading-[1.1]">
-            {tHome('title')}
+            {tHome("title")}
           </h2>
           <p className="text-slate-500 text-lg md:text-xl font-medium max-w-2xl mx-auto leading-relaxed">
-            {tHome('subtitle')}
+            {tHome("subtitle")}
           </p>
         </div>
 
-        {/* Quick Actions Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-12">
-          {/* Scan Action */}
-          <Link 
-            href="/scan" 
-            className="group p-8 rounded-[2.5rem] bg-slate-900 text-white shadow-xl shadow-slate-900/20 hover:-translate-y-2 transition-all duration-300 relative overflow-hidden"
-            aria-label="Scan medicine"
-          >
-            <div className="absolute top-0 right-0 p-6 opacity-10 group-hover:scale-110 transition-transform">
-              <Camera size={120} />
+        {/* ── Primary CTA — Full-width Scan Button ── */}
+        <button
+          onClick={() => handleNavigation("scan")}
+          className="w-full group relative overflow-hidden rounded-3xl bg-emerald-600 text-white p-7 md:p-8 shadow-xl shadow-emerald-600/20 transition-all active:scale-[0.99] hover:shadow-emerald-600/40 border border-emerald-500 text-left flex items-center justify-between"
+          aria-label="Scan medicine"
+        >
+          <div className="absolute inset-0 bg-gradient-to-tr from-emerald-700 to-emerald-500 z-0"></div>
+          <div className="absolute -right-10 -top-10 w-40 h-40 bg-white/10 rounded-full blur-3xl"></div>
+          <div className="relative z-10 flex items-center gap-6">
+            <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-white/20 flex items-center justify-center backdrop-blur-md group-hover:scale-110 group-hover:rotate-3 transition-all duration-300 shadow-inner shrink-0">
+              <Camera className="text-white drop-shadow-md w-8 h-8 md:w-10 md:h-10" strokeWidth={2} />
             </div>
-            <div className="relative z-10 space-y-4">
-              <div className="w-14 h-14 rounded-2xl bg-emerald-500 text-white flex items-center justify-center shadow-lg">
-                <Camera size={28} />
-              </div>
-              <div>
-                <h3 className="text-2xl font-black tracking-tight">{tHome('scan_button')}</h3>
-                <p className="text-slate-400 font-medium mt-1">{tHome('scan_subtitle')}</p>
-              </div>
-              <div className="flex items-center gap-2 text-emerald-400 font-bold pt-2">
-                Launch Scanner <ChevronRight size={18} />
-              </div>
+            <div>
+              <span className="block text-2xl md:text-3xl font-bold tracking-wide drop-shadow-sm">
+                {tHome("scan_button")}
+              </span>
+              <span className="block text-emerald-100 text-sm md:text-base font-medium opacity-90 mt-1">
+                {tHome("scan_subtitle")}
+              </span>
             </div>
-          </Link>
+          </div>
+          <ChevronRight size={32} className="relative z-10 text-emerald-200 opacity-50 group-hover:opacity-100 group-hover:translate-x-2 transition-all hidden sm:block shrink-0" />
+        </button>
 
-          {/* Voice Action */}
-          <Link 
-            href="/voice" 
-            className="group p-8 rounded-[2.5rem] bg-white border border-slate-200 shadow-sm hover:shadow-md hover:-translate-y-2 transition-all duration-300 relative overflow-hidden"
+        {/* ── Secondary Action Cards ── */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-4">
+
+          {/* Upload Photo */}
+          <button
+            onClick={() => handleNavigation("scan")}
+            className="flex items-center gap-5 bg-white border border-slate-200 p-6 rounded-3xl active:scale-95 transition-all group hover:border-emerald-200 hover:shadow-lg hover:shadow-emerald-100/50 text-left w-full"
+            aria-label="Upload photo"
+          >
+            <div className="w-14 h-14 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center group-hover:bg-emerald-500 group-hover:text-white transition-colors duration-300 shrink-0">
+              <Globe size={28} strokeWidth={2.5} />
+            </div>
+            <div>
+              <h3 className="font-bold text-slate-800 text-lg">{tHome("upload_photo")}</h3>
+              <p className="text-slate-500 text-sm mt-0.5 font-medium leading-snug">{tHome("upload_subtitle")}</p>
+            </div>
+          </button>
+
+          {/* Voice Triage */}
+          <button
+            onClick={() => handleNavigation("voice")}
+            className="flex items-center gap-5 bg-white border border-slate-200 p-6 rounded-3xl active:scale-95 transition-all group hover:border-blue-200 hover:shadow-lg hover:shadow-blue-100/50 text-left w-full"
             aria-label="Voice triage"
           >
-             <div className="absolute top-0 right-0 p-6 opacity-5 group-hover:scale-110 transition-transform">
-              <Mic size={120} />
+            <div className="w-14 h-14 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center group-hover:bg-blue-500 group-hover:text-white transition-colors duration-300 shrink-0">
+              <Mic size={28} strokeWidth={2.5} />
             </div>
-            <div className="relative z-10 space-y-4">
-              <div className="w-14 h-14 rounded-2xl bg-blue-100 text-blue-600 flex items-center justify-center">
-                <Mic size={28} />
-              </div>
-              <div>
-                <h3 className="text-2xl font-black tracking-tight text-slate-800">{tHome('voice_triage')}</h3>
-                <p className="text-slate-500 font-medium mt-1">{tHome('voice_subtitle')}</p>
-              </div>
-              <div className="flex items-center gap-2 text-blue-600 font-bold pt-2">
-                Start Consultation <ChevronRight size={18} />
-              </div>
+            <div>
+              <h3 className="font-bold text-slate-800 text-lg">{tHome("voice_triage")}</h3>
+              <p className="text-slate-500 text-sm mt-0.5 font-medium leading-snug">{tHome("voice_subtitle")}</p>
             </div>
-          </Link>
+          </button>
 
-          {/* Map Action */}
-          <Link 
-            href="/map" 
-            className="group p-8 rounded-[2.5rem] bg-white border border-slate-200 shadow-sm hover:shadow-md hover:-translate-y-2 transition-all duration-300 relative overflow-hidden"
-            aria-label="Find pharmacy map"
+          {/* Pharmacy Map */}
+          <button
+            onClick={() => handleNavigation("map")}
+            className="flex items-center gap-5 bg-white border border-slate-200 p-6 rounded-3xl active:scale-95 transition-all group hover:border-amber-200 hover:shadow-lg hover:shadow-amber-100/50 text-left w-full"
+            aria-label="Pharmacy map"
           >
-             <div className="absolute top-0 right-0 p-6 opacity-5 group-hover:scale-110 transition-transform">
-              <MapPin size={120} />
+            <div className="w-14 h-14 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center group-hover:bg-amber-500 group-hover:text-white transition-colors duration-300 shrink-0">
+              <MapPin size={28} strokeWidth={2.5} />
             </div>
-            <div className="relative z-10 space-y-4">
-              <div className="w-14 h-14 rounded-2xl bg-amber-100 text-amber-600 flex items-center justify-center">
-                <MapPin size={28} />
-              </div>
-              <div>
-                <h3 className="text-2xl font-black tracking-tight text-slate-800">{tHome('pharmacy_map')}</h3>
-                <p className="text-slate-500 font-medium mt-1">{tHome('pharmacy_subtitle')}</p>
-              </div>
-              <div className="flex items-center gap-2 text-amber-600 font-bold pt-2">
-                Open Map <ChevronRight size={18} />
-              </div>
+            <div>
+              <h3 className="font-bold text-slate-800 text-lg">{tHome("pharmacy_map")}</h3>
+              <p className="text-slate-500 text-sm mt-0.5 font-medium leading-snug">{tHome("pharmacy_subtitle")}</p>
             </div>
-          </Link>
+          </button>
+
+          {/* Report Fake Medicine */}
+          <button
+            onClick={() => handleNavigation("report")}
+            className="flex items-center gap-5 bg-white border border-slate-200 p-6 rounded-3xl active:scale-95 transition-all group hover:border-red-200 hover:shadow-lg hover:shadow-red-100/50 text-left w-full"
+            aria-label="Report fake medicine"
+          >
+            <div className="w-14 h-14 rounded-2xl bg-red-50 text-red-600 flex items-center justify-center group-hover:bg-red-500 group-hover:text-white transition-colors duration-300 shrink-0">
+              <AlertTriangle size={28} strokeWidth={2.5} />
+            </div>
+            <div>
+              <h3 className="font-bold text-slate-800 text-lg">Report Fake</h3>
+              <p className="text-slate-500 text-sm mt-0.5 font-medium leading-snug">Report suspicious medicine</p>
+            </div>
+          </button>
         </div>
 
-        {/* Global Search */}
-        <div className="mt-16 bg-white border border-slate-200 rounded-[3rem] p-4 shadow-sm focus-within:ring-2 focus-within:ring-emerald-500/20 transition-all">
+        {/* ── AI Health Assistant CTA Banner ── */}
+        <div className="mt-6 bg-gradient-to-r from-blue-50 to-purple-50 rounded-3xl p-6 border border-blue-100">
+          <div className="flex items-center justify-between flex-wrap gap-4">
+            <div className="flex items-center gap-4">
+              <div className="w-14 h-14 rounded-2xl bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center shadow-lg shrink-0">
+                <MessageCircle size={28} className="text-white" />
+              </div>
+              <div>
+                <h3 className="font-bold text-slate-800 text-lg">AI Health Assistant</h3>
+                <p className="text-slate-600 text-sm">Get instant health advice and symptom checking</p>
+              </div>
+            </div>
+            <button
+              onClick={() => handleNavigation("health")}
+              className="px-6 py-2.5 bg-gradient-to-r from-blue-500 to-purple-500 text-white font-bold rounded-xl hover:shadow-lg hover:scale-105 transition-all duration-200"
+            >
+              Chat Now →
+            </button>
+          </div>
+        </div>
+
+        {/* ── Global Search ── */}
+        <div className="mt-8 bg-white border border-slate-200 rounded-[3rem] p-4 shadow-sm focus-within:ring-2 focus-within:ring-emerald-500/20 transition-all">
           <div className="flex items-center gap-2 sm:gap-4 px-2">
-            <Search className="text-slate-400 ml-2" size={24} />
-            <input 
-              type="text" 
-              placeholder={tHome('search_placeholder')}
+            <Search className="text-slate-400 ml-2 shrink-0" size={24} />
+            <input
+              type="text"
+              placeholder={tHome("search_placeholder")}
               className="w-full bg-transparent border-none outline-none px-4 py-3 text-slate-700 font-medium placeholder:text-slate-400"
               aria-label="Search medicine or batch"
             />
-            <button className="bg-slate-900 text-white px-5 sm:px-6 py-3 rounded-2xl font-bold hover:bg-slate-800 transition-colors text-sm sm:text-base">
-              {tHome('search_button')}
+            <button className="bg-slate-900 text-white px-5 sm:px-6 py-3 rounded-2xl font-bold hover:bg-slate-800 transition-colors text-sm sm:text-base shrink-0">
+              {tHome("search_button")}
             </button>
           </div>
         </div>
@@ -297,63 +352,110 @@ export default function SahiDawaHome() {
               </div>
             </div>
 
-            {/* AI Assistant Promo */}
-            <div className="bg-emerald-600 rounded-3xl p-8 text-white relative overflow-hidden shadow-xl shadow-emerald-600/20">
-               <div className="absolute -bottom-12 -right-12 p-12 bg-emerald-500 rounded-full opacity-50 blur-3xl"></div>
-               <div className="relative z-10 space-y-6">
-                  <div className="w-12 h-12 rounded-xl bg-white/20 backdrop-blur-md flex items-center justify-center">
-                    <MessageCircle size={24} />
-                  </div>
-                  <div>
-                    <h3 className="text-2xl font-black">AI Health Assistant</h3>
-                    <p className="text-emerald-100 font-medium mt-2 leading-relaxed">
-                      Have questions about your prescription or symptoms? Chat with our AI assistant for instant, verified health guidance.
-                    </p>
-                  </div>
-                  <button className="px-6 py-3 bg-white text-emerald-600 font-bold rounded-2xl hover:bg-emerald-50 transition-colors">
-                    Try Assistant
-                  </button>
-               </div>
+          {/* AI Assistant Promo */}
+          <div className="bg-emerald-600 rounded-3xl p-8 text-white relative overflow-hidden shadow-xl shadow-emerald-600/20">
+            <div className="absolute -bottom-12 -right-12 p-12 bg-emerald-500 rounded-full opacity-50 blur-3xl"></div>
+            <div className="relative z-10 space-y-6">
+              <div className="w-12 h-12 rounded-xl bg-white/20 backdrop-blur-md flex items-center justify-center">
+                <MessageCircle size={24} />
+              </div>
+              <div>
+                <h3 className="text-2xl font-black">AI Health Assistant</h3>
+                <p className="text-emerald-100 font-medium mt-2 leading-relaxed">
+                  Have questions about your prescription or symptoms? Chat with our AI assistant for instant, verified health guidance.
+                </p>
+              </div>
+              <button
+                onClick={() => handleNavigation("health")}
+                className="px-6 py-3 bg-white text-emerald-600 font-bold rounded-2xl hover:bg-emerald-50 transition-colors"
+              >
+                Try Assistant
+              </button>
             </div>
+          </div>
         </div>
       </main>
 
+      {/* Spacer for mobile nav */}
       <div className="h-16 md:hidden"></div>
 
-      {/* Mobile Bottom Navigation */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-md border-t border-slate-200/60 flex justify-around px-2 py-3 items-center z-50 pb-[env(safe-area-inset-bottom)]" aria-label="Mobile navigation">
-        <Link href="/" className="flex flex-col items-center gap-1.5 w-16 group" aria-label="Go to home">
-          <div className="text-emerald-600 group-hover:-translate-y-1 transition-transform">
-            <Home size={24} strokeWidth={2.5} />
-          </div>
-          <span className="text-[11px] font-bold text-emerald-600">Home</span>
-        </Link>
-        <Link href="/scan" className="flex flex-col items-center gap-1.5 w-16 group text-slate-400 hover:text-slate-600 transition-colors" aria-label="Go to scan history">
-          <div className="group-hover:-translate-y-1 transition-transform">
-            <History size={24} strokeWidth={2} />
-          </div>
-          <span className="text-[11px] font-semibold">Scans</span>
-        </Link>
-        <Link href="/map" className="flex flex-col items-center gap-1.5 w-16 group text-slate-400 hover:text-amber-600 transition-colors" aria-label="Go to pharmacy map">
-          <div className="group-hover:-translate-y-1 transition-transform">
-            <MapPin size={24} strokeWidth={2} />
-          </div>
-          <span className="text-[11px] font-semibold">Map</span>
-        </Link>
-        <button className="flex flex-col items-center gap-1.5 w-16 group text-slate-400 hover:text-slate-600 transition-colors" aria-label="Go to alerts">
-          <div className="relative group-hover:-translate-y-1 transition-transform">
-            <Bell size={24} strokeWidth={2} />
-            <span className="absolute top-0 right-0.5 w-2 h-2 bg-red-500 border border-white rounded-full"></span>
-          </div>
-          <span className="text-[11px] font-semibold">Alerts</span>
-        </button>
-        <button className="flex flex-col items-center gap-1.5 w-16 group text-slate-400 hover:text-slate-600 transition-colors" aria-label="Go to profile">
-          <div className="group-hover:-translate-y-1 transition-transform">
-            <User size={24} strokeWidth={2} />
-          </div>
-          <span className="text-[11px] font-semibold">Profile</span>
-        </button>
-      </nav>
+ {/* ── Mobile Bottom Navigation ── */}
+<nav
+  className="md:hidden fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-md border-t border-slate-200/60 flex justify-around px-2 py-3 items-center z-50 pb-[env(safe-area-inset-bottom)]"
+  aria-label="Mobile navigation"
+>
+  <Link
+    href="/"
+    className="flex flex-col items-center gap-1.5 w-16 group"
+    aria-label="Home"
+  >
+    <div className="text-emerald-600 group-hover:-translate-y-1 transition-transform">
+      <Home size={24} strokeWidth={2.5} />
+    </div>
+
+    <span className="text-[11px] font-bold text-emerald-600">
+      Home
+    </span>
+  </Link>
+
+  <Link
+    href="/scan"
+    className="flex flex-col items-center gap-1.5 w-16 group text-slate-400 hover:text-slate-600 transition-colors"
+    aria-label="Scans"
+  >
+    <div className="group-hover:-translate-y-1 transition-transform">
+      <History size={24} strokeWidth={2} />
+    </div>
+
+    <span className="text-[11px] font-semibold">
+      Scans
+    </span>
+  </Link>
+
+  <Link
+    href="/map"
+    className="flex flex-col items-center gap-1.5 w-16 group text-slate-400 hover:text-amber-600 transition-colors"
+    aria-label="Map"
+  >
+    <div className="group-hover:-translate-y-1 transition-transform">
+      <MapPin size={24} strokeWidth={2} />
+    </div>
+
+    <span className="text-[11px] font-semibold">
+      Map
+    </span>
+  </Link>
+
+  <Link
+    href="/alerts"
+    className="flex flex-col items-center gap-1.5 w-16 group text-slate-400 hover:text-red-500 transition-colors"
+    aria-label="Alerts"
+  >
+    <div className="relative group-hover:-translate-y-1 transition-transform">
+      <Bell size={24} strokeWidth={2} />
+
+      <span className="absolute top-0 right-0.5 w-2 h-2 bg-red-500 border border-white rounded-full animate-pulse"></span>
+    </div>
+
+    <span className="text-[11px] font-semibold">
+      Alerts
+    </span>
+  </Link>
+
+  <Link
+    href="/profile"
+    className="flex flex-col items-center gap-1.5 w-16 group text-slate-400 hover:text-emerald-600 transition-colors"
+    aria-label="Profile"
+  >
+    <div className="group-hover:-translate-y-1 transition-transform">
+      <User size={24} strokeWidth={2} />
+    </div>
+
+    <span className="text-[11px] font-semibold">
+      Profile
+    </span>
+  </Link>
+</nav>
       <Footer />
     </div>
   );
