@@ -29,8 +29,14 @@
         "example_text": "\"I have fever and cough\"",
         "assistant_label": "AI Assistant",
         "assistant_value": "Listening 24/7",
+        "skip_to_main_content": "Skip to main content",
         "listening_placeholder": "Start speaking about your symptoms…",
         "listening_status": "Listening for symptoms",
+        "announcements": {
+            "recording_started": "Recording started",
+            "processing_started": "Processing your symptoms",
+            "results_ready": "Results ready"
+        },
         "animation_toggle_label": "Voice animations",
         "animation_live_label": "Live waveform",
         "animation_reduced_motion_label": "Reduced motion",

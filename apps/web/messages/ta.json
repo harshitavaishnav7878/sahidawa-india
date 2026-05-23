@@ -29,8 +29,14 @@
         "example_text": "\"எனக்கு காய்ச்சலும் இருமலும் உள்ளது\"",
         "assistant_label": "AI உதவி",
         "assistant_value": "24/7 கேட்கிறது",
+        "skip_to_main_content": "முக்கிய உள்ளடக்கத்திற்குச் செல்லவும்",
         "listening_placeholder": "உங்கள் அறிகுறிகளைப் பேசத் தொடங்குங்கள்…",
         "listening_status": "அறிகுறிகளை கேட்கிறது",
+        "announcements": {
+            "recording_started": "பதிவு தொடங்கியது",
+            "processing_started": "உங்கள் அறிகுறிகள் செயலாக்கப்படத் தொடங்கின",
+            "results_ready": "முடிவுகள் தயாராக உள்ளன"
+        },
         "animation_toggle_label": "குரல் அசைவுகள்",
         "animation_live_label": "நேரடி அலைவடிவம்",
         "animation_reduced_motion_label": "குறைந்த அசைவு",

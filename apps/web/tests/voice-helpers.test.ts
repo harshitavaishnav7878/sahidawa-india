@@ -1,6 +1,9 @@
 import { getConfidenceMeta } from "../app/[locale]/voice/lib/confidence";
 import { detectEmergencyKeywords } from "../app/[locale]/voice/lib/emergency";
-import { shouldAutoFocusVoicePanel } from "../app/[locale]/voice/lib/accessibility";
+import {
+    getVoiceStepAnnouncement,
+    shouldAutoFocusVoicePanel,
+} from "../app/[locale]/voice/lib/accessibility";
 import {
     DEFAULT_VOICE_LANGUAGE,
     VOICE_LANGUAGE_OPTIONS,
@@ -208,5 +211,70 @@ describe("shouldAutoFocusVoicePanel", () => {
 
     it("does not auto-focus the panel on the initial state", () => {
         expect(shouldAutoFocusVoicePanel("initial")).toBe(false);
+    });
+});
+
+describe("getVoiceStepAnnouncement", () => {
+    const copy = {
+        emergencyTitle: "Seek immediate medical attention",
+        errorPrefix: "Something went wrong",
+        listeningStatus: "Listening for symptoms",
+        processingStarted: "Processing your symptoms",
+        processingSubtitle: "Checking your symptoms with SahiDawa AI…",
+        recordingStarted: "Recording started",
+        resultHeading: "AI Analysis",
+        resultSubheading: "Medical Triage",
+        resultsReady: "Results ready",
+        reviewMessage: "Please review the transcript before continuing.",
+        reviewTitle: "Review transcript",
+    };
+
+    it("announces the active voice flow state with explicit listening and result copy", () => {
+        expect(
+            getVoiceStepAnnouncement({
+                copy,
+                error: null,
+                hasResult: false,
+                isEmergency: false,
+                step: "listening",
+            })
+        ).toBe("Recording started. Listening for symptoms");
+
+        expect(
+            getVoiceStepAnnouncement({
+                copy,
+                error: null,
+                hasResult: true,
+                isEmergency: false,
+                step: "result",
+            })
+        ).toBe("Results ready. AI Analysis. Medical Triage");
+    });
+
+    it("includes emergency and error details when they are present", () => {
+        expect(
+            getVoiceStepAnnouncement({
+                copy,
+                error: null,
+                hasResult: true,
+                isEmergency: true,
+                step: "result",
+            })
+        ).toBe("Results ready. AI Analysis - Seek immediate medical attention. Medical Triage");
+
+        expect(
+            getVoiceStepAnnouncement({
+                copy,
+                error: {
+                    title: "Microphone blocked",
+                    message: "Please allow microphone access and try again.",
+                },
+                hasResult: false,
+                isEmergency: false,
+                step: "error",
+            })
+        ).toBe(
+            "Something went wrong - Microphone blocked. Please allow microphone access and try again."
+        );
     });
 });

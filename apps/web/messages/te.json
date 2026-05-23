@@ -29,8 +29,14 @@
         "example_text": "\"నాకు జ్వరం మరియు దగ్గు ఉంది\"",
         "assistant_label": "AI సహాయకుడు",
         "assistant_value": "24/7 వింటోంది",
+        "skip_to_main_content": "ప్రధాన విషయానికి వెళ్లండి",
         "listening_placeholder": "మీ లక్షణాలను చెప్పడం ప్రారంభించండి…",
         "listening_status": "లక్షణాలను వింటోంది",
+        "announcements": {
+            "recording_started": "రికార్డింగ్ ప్రారంభమైంది",
+            "processing_started": "మీ లక్షణాల ప్రాసెసింగ్ ప్రారంభమైంది",
+            "results_ready": "ఫలితాలు సిద్ధంగా ఉన్నాయి"
+        },
         "animation_toggle_label": "వాయిస్ యానిమేషన్లు",
         "animation_live_label": "లైవ్ తరంగరూపం",
         "animation_reduced_motion_label": "తక్కువ కదలిక",

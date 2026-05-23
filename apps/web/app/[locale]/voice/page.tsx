@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useEffectEvent, useRef, useState } from "react";
 import { Mic } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
@@ -14,7 +14,11 @@ import {
 } from "./lib/browser";
 import { getConfidenceMeta, type ConfidenceMeta } from "./lib/confidence";
 import { detectEmergencyKeywords } from "./lib/emergency";
-import { shouldAutoFocusVoicePanel } from "./lib/accessibility";
+import {
+    getVoiceStepAnnouncement,
+    shouldAutoFocusVoicePanel,
+    VOICE_FOCUS_RING_CLASS,
+} from "./lib/accessibility";
 import {
     DEFAULT_VOICE_LANGUAGE,
     getVoiceLanguageOption,
@@ -241,31 +245,25 @@ export default function VoiceTriagePage() {
             return;
         }
 
-        let announcement = "";
-
-        switch (step) {
-            case "listening":
-                announcement = t("listening_status");
-                break;
-            case "processing":
-                announcement = t("processing_subtitle");
-                break;
-            case "review":
-                announcement = `${t("review_title")}. ${t("review_message")}`;
-                break;
-            case "result":
-                if (result) {
-                    announcement = result.emergency
-                        ? `${t("result_heading")} - ${t("emergency_title")}. ${t("result_subheading")}`
-                        : `${t("result_heading")}. ${t("result_subheading")}`;
-                }
-                break;
-            case "error":
-                announcement = error
-                    ? `${t("errors.generic_title")} - ${error.title}. ${error.message}`
-                    : t("errors.generic_title");
-                break;
-        }
+        const announcement = getVoiceStepAnnouncement({
+            copy: {
+                emergencyTitle: t("emergency_title"),
+                errorPrefix: t("errors.generic_title"),
+                listeningStatus: t("listening_status"),
+                processingStarted: t("announcements.processing_started"),
+                processingSubtitle: t("processing_subtitle"),
+                recordingStarted: t("announcements.recording_started"),
+                resultHeading: t("result_heading"),
+                resultSubheading: t("result_subheading"),
+                resultsReady: t("announcements.results_ready"),
+                reviewMessage: t("review_message"),
+                reviewTitle: t("review_title"),
+            },
+            error,
+            hasResult: Boolean(result),
+            isEmergency: Boolean(result?.emergency),
+            step,
+        });
 
         if (announcement) {
             setSrAnnouncement(announcement);
@@ -281,6 +279,42 @@ export default function VoiceTriagePage() {
 
         return () => window.clearTimeout(focusTimer);
     }, [error, result, step, t]);
+
+    const handleEscapeShortcut = useEffectEvent((event: KeyboardEvent) => {
+        if (event.key !== "Escape") {
+            return;
+        }
+
+        if (isSpeaking) {
+            event.preventDefault();
+            handleStopSpeaking();
+            return;
+        }
+
+        if (step === "listening") {
+            event.preventDefault();
+            stopListening();
+            return;
+        }
+
+        if (step === "review" || step === "error" || step === "result") {
+            event.preventDefault();
+            resetFlow();
+        }
+    });
+
+    useEffect(() => {
+        if (typeof window === "undefined") {
+            return;
+        }
+
+        function handleKeyDown(event: KeyboardEvent) {
+            handleEscapeShortcut(event);
+        }
+
+        window.addEventListener("keydown", handleKeyDown);
+        return () => window.removeEventListener("keydown", handleKeyDown);
+    }, [handleEscapeShortcut]);
 
     function resetFlow(nextStep: VoiceStep = "initial") {
         startSessionIdRef.current += 1;
@@ -851,6 +885,12 @@ export default function VoiceTriagePage() {
 
     return (
         <div className="relative flex min-h-screen flex-col overflow-hidden bg-slate-50 font-sans">
+            <a
+                href="#main-content"
+                className="sr-only absolute top-4 left-4 z-[60] rounded-full bg-emerald-600 px-4 py-2 text-sm font-bold text-white shadow-lg focus:not-sr-only focus-visible:ring-[3px] focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-emerald-600 focus-visible:outline-none"
+            >
+                {t("skip_to_main_content")}
+            </a>
             <div className="sr-only" role="status" aria-live="polite" aria-atomic="true">
                 {srAnnouncement}
             </div>
@@ -877,7 +917,11 @@ export default function VoiceTriagePage() {
                 }
             />
 
-            <main className="relative z-10 flex flex-1 flex-col items-center justify-center gap-6 px-6 py-8">
+            <main
+                id="main-content"
+                tabIndex={-1}
+                className="relative z-10 flex flex-1 flex-col items-center justify-center gap-6 px-6 py-8"
+            >
                 <div className="w-full max-w-md">
                     <label
                         htmlFor="voice-language"
@@ -892,7 +936,7 @@ export default function VoiceTriagePage() {
                         disabled={
                             step === "listening" || step === "processing" || step === "result"
                         }
-                        className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 shadow-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none disabled:cursor-not-allowed disabled:bg-slate-100"
+                        className={`w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 shadow-sm disabled:cursor-not-allowed disabled:bg-slate-100 ${VOICE_FOCUS_RING_CLASS}`}
                     >
                         {VOICE_LANGUAGE_OPTIONS.map((option) => (
                             <option key={option.value} value={option.value}>
@@ -922,7 +966,7 @@ export default function VoiceTriagePage() {
                 <div
                     ref={panelRef}
                     tabIndex={-1}
-                    className="w-full max-w-md rounded-[2.5rem] focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/20 focus-visible:ring-offset-2"
+                    className="w-full max-w-md rounded-[2.5rem] focus-visible:ring-[3px] focus-visible:ring-emerald-600 focus-visible:ring-offset-2 focus-visible:outline-none"
                 >
                     {step === "initial" && (
                         <VoiceIntroPanel
@@ -1022,10 +1066,10 @@ export default function VoiceTriagePage() {
                                 ? t("stop_listening_aria")
                                 : t("start_listening_aria")
                         }
-                        className={`relative flex h-24 w-24 items-center justify-center rounded-full transition-all duration-500 focus-visible:ring-4 focus-visible:ring-offset-4 focus-visible:outline-none ${
+                        className={`relative flex h-24 w-24 items-center justify-center rounded-full transition-all duration-500 focus-visible:ring-[3px] focus-visible:ring-emerald-600 focus-visible:ring-offset-4 focus-visible:outline-none ${
                             step === "listening"
-                                ? "scale-125 bg-red-500 focus-visible:ring-red-500/50"
-                                : "bg-emerald-500 shadow-xl shadow-emerald-500/30 hover:scale-110 focus-visible:ring-emerald-500/50"
+                                ? "scale-125 bg-red-500"
+                                : "bg-emerald-500 shadow-xl shadow-emerald-500/30 hover:scale-110"
                         } `}
                     >
                         {step === "listening" ? (
