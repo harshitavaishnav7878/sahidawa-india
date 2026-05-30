@@ -1,12 +1,19 @@
 "use client";
 
 import { FaGithub, FaLinkedin, FaXTwitter } from "react-icons/fa6";
-import { GitBranch, Sparkles, Heart, CalendarRange } from "lucide-react"; // Naya icon import kiya: CalendarRange
+import { GitBranch, Sparkles, Heart, CalendarRange } from "lucide-react";
 import { Link } from "@/i18n/routing";
+import { usePathname } from "next/navigation"; // Yeh import main branch se aaya hai
 
 export default function Footer() {
+    const pathname = usePathname();
+    // Matches localized homepages like /en, /hi, /mr, or /
+    const isHome = pathname ? /^\/[a-z]{2}$|^\/$/.test(pathname) : false;
+
     return (
-        <footer className="no-print mt-auto border-t border-slate-800 bg-slate-950 text-slate-400">
+        <footer
+            className={`no-print mt-auto border-t border-slate-800 bg-slate-950 text-slate-400 ${isHome ? "mb-16 md:mb-0" : ""}`}
+        >
             <div className="container mx-auto px-4 py-10 md:px-6">
                 <div className="grid grid-cols-1 gap-8 border-b border-slate-800 pb-8 md:grid-cols-3">
                     {/* Brand Section */}
@@ -49,7 +56,7 @@ export default function Footer() {
                                 Contributing Guide
                             </a>
 
-                            {/* ADDED: Aapka Medicine Expiry Tracker link yahan add ho gaya hai */}
+                            {/* Aapka Medicine Expiry Tracker link */}
                             <Link
                                 href="/expiry-tracker"
                                 className="flex items-center gap-2 transition-all duration-200 hover:translate-x-1 hover:text-white text-emerald-400 font-medium"
@@ -92,6 +99,7 @@ export default function Footer() {
                         </h3>
 
                         <div className="flex items-center gap-4">
+                            {/* Socials remain the same... */}
                             <a
                                 href="https://github.com/RatLoopz/sahidawa-india"
                                 target="_blank"
@@ -100,7 +108,6 @@ export default function Footer() {
                             >
                                 <FaGithub size={18} />
                             </a>
-
                             <a
                                 href="https://linkedin.com/"
                                 target="_blank"
@@ -109,7 +116,6 @@ export default function Footer() {
                             >
                                 <FaLinkedin size={18} />
                             </a>
-
                             <a
                                 href="https://twitter.com/"
                                 target="_blank"
@@ -124,13 +130,10 @@ export default function Footer() {
 
                 {/* Bottom Footer */}
                 <div className="flex flex-col items-center justify-between gap-4 pt-6 text-xs text-slate-500 md:flex-row">
-                    <div className="flex items-center gap-4">
-                        <p className="text-xs md:text-sm">
-                            © 2026 SahiDawa. Open Source under MIT License.
-                        </p>
-                    </div>
-
-                    <p className="text-xs md:text-sm text-center md:text-right">
+                    <p className="text-xs md:text-sm">
+                        © 2026 SahiDawa. Open Source under MIT License.
+                    </p>
+                    <p className="text-center text-xs md:text-right md:text-sm">
                         Built with <Heart className="inline h-[1em] w-[1em] text-red-500" /> for the
                         open-source community.
                     </p>
