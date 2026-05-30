@@ -3,7 +3,7 @@
 import { FaGithub, FaLinkedin, FaXTwitter } from "react-icons/fa6";
 import { GitBranch, Sparkles, Heart, CalendarRange } from "lucide-react";
 import { Link } from "@/i18n/routing";
-import { usePathname } from "next/navigation"; // Yeh import main branch se aaya hai
+import { usePathname } from "next/navigation";
 
 export default function Footer() {
     const pathname = usePathname();
@@ -56,7 +56,7 @@ export default function Footer() {
                                 Contributing Guide
                             </a>
 
-                            {/* Aapka Medicine Expiry Tracker link */}
+                            {/* Medicine Expiry Tracker link */}
                             <Link
                                 href="/expiry-tracker"
                                 className="flex items-center gap-2 transition-all duration-200 hover:translate-x-1 hover:text-white text-emerald-400 font-medium"
@@ -99,7 +99,6 @@ export default function Footer() {
                         </h3>
 
                         <div className="flex items-center gap-4">
-                            {/* Socials remain the same... */}
                             <a
                                 href="https://github.com/RatLoopz/sahidawa-india"
                                 target="_blank"
@@ -130,9 +129,12 @@ export default function Footer() {
 
                 {/* Bottom Footer */}
                 <div className="flex flex-col items-center justify-between gap-4 pt-6 text-xs text-slate-500 md:flex-row">
-                    <p className="text-xs md:text-sm">
-                        © 2026 SahiDawa. Open Source under MIT License.
-                    </p>
+                    <div className="flex items-center gap-4">
+                        <p className="text-xs md:text-sm">
+                            © 2026 SahiDawa. Open Source under MIT License.
+                        </p>
+                    </div>
+
                     <p className="text-center text-xs md:text-right md:text-sm">
                         Built with <Heart className="inline h-[1em] w-[1em] text-red-500" /> for the
                         open-source community.
