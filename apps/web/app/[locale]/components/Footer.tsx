@@ -1,6 +1,9 @@
+"use client";
+
 import { FaGithub, FaLinkedin, FaXTwitter } from "react-icons/fa6";
-import { GitBranch, Sparkles, Heart } from "lucide-react";
+import { GitBranch, Sparkles, Heart, CalendarRange } from "lucide-react"; // Naya icon import kiya: CalendarRange
 import { Link } from "@/i18n/routing";
+
 export default function Footer() {
     return (
         <footer className="no-print mt-auto border-t border-slate-800 bg-slate-950 text-slate-400">
@@ -45,6 +48,16 @@ export default function Footer() {
                             >
                                 Contributing Guide
                             </a>
+
+                            {/* ADDED: Aapka Medicine Expiry Tracker link yahan add ho gaya hai */}
+                            <Link
+                                href="/expiry-tracker"
+                                className="flex items-center gap-2 transition-all duration-200 hover:translate-x-1 hover:text-white text-emerald-400 font-medium"
+                            >
+                                <CalendarRange size={16} />
+                                Medicine Expiry Tracker
+                            </Link>
+
                             <Link
                                 href="/faq"
                                 className="transition-all duration-200 hover:translate-x-1 hover:text-white"
