@@ -50,25 +50,6 @@ export const PageHeader = ({
                     <span className="sr-only">Go back</span>
                 </Link>
 
-                {/* --- NAVIGATION LINKS INSERTED HERE --- */}
-               {/* <div className="hidden md:flex items-center gap-6 mx-4"> */}
-               <div className="flex items-center gap-6 mx-4">
-                <Link href="/how-it-works" className="text-sm font-medium hover:text-emerald-400 transition-colors">
-                   How it Works
-                </Link>
-
-                <Link href="/alerts" className="text-sm font-medium hover:text-emerald-400 transition-colors">
-                       Alerts
-                </Link>
-               <Link href="/map" className="text-sm font-medium hover:text-emerald-400 transition-colors">
-                 Pharmacy Map
-                </Link>
-                 <Link href="/expiry-tracker" className="text-sm font-semibold text-emerald-400 hover:text-emerald-300 transition-colors">
-                 Expiry Tracker
-                </Link>
-                   </div>
-                {/* -------------------------------------- */}
-
                 {children ? (
                     <div className="min-w-0 flex-1">{children}</div>
                 ) : (
