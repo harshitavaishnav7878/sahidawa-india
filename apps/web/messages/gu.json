@@ -365,41 +365,5 @@
         "status": "Online",
         "title": "SahiDawa AI",
         "welcome": "Hi! I am the SahiDawa AI Assistant. How can I help you with your medicines today?"
-    },
-    "contact": {
-        "badge": "GSSoC 2026 Open Source Project",
-        "heroTitle": {
-            "prefix": "Get In",
-            "highlight": "Touch"
-        },
-        "heroSubtitle": "Have questions, ideas, or want to contribute? We would love to hear from you.",
-        "cards": {
-            "email": {
-                "title": "Email Us",
-                "description": "For privacy queries, partnerships, or serious concerns."
-            },
-            "discord": {
-                "title": "Discord Community",
-                "description": "Join contributors, ask questions, and get announcements.",
-                "cta": "Join Discord"
-            },
-            "bug": {
-                "title": "Report a Bug",
-                "description": "Found an issue? Open a GitHub issue and we will fix it fast.",
-                "cta": "Open Issue"
-            },
-            "contribute": {
-                "title": "Contribute",
-                "description": "Want to help build SahiDawa? Read our contributing guide.",
-                "cta": "Read Guide"
-            }
-        },
-        "quickLinks": {
-            "title": "Helpful Links",
-            "about": "About SahiDawa",
-            "privacy": "Privacy Policy",
-            "faq": "FAQ"
-        },
-        "footer": "SahiDawa is free, open-source, and built for 1.4 billion Indians. No ads. No premium. No data sold. Ever."
     }
 }
