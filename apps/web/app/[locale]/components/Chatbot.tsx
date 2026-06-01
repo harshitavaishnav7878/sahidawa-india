@@ -111,10 +111,11 @@ export default function Chatbot() {
                         {messages.map((msg, idx) => (
                             <div
                                 key={idx}
-                                className={`max-w-[85%] rounded-2xl p-3 shadow-sm ${msg.isBot
-                                    ? "self-start rounded-tl-sm border border-(--color-border-muted) bg-(--color-surface-page) text-(--color-text-primary)"
-                                    : "self-end rounded-tr-sm bg-green-600 text-white dark:bg-green-700"
-                                    }`}
+                                className={`max-w-[85%] rounded-2xl p-3 shadow-sm ${
+                                    msg.isBot
+                                        ? "self-start rounded-tl-sm border border-(--color-border-muted) bg-(--color-surface-page) text-(--color-text-primary)"
+                                        : "self-end rounded-tr-sm bg-green-600 text-white dark:bg-green-700"
+                                }`}
                             >
                                 <p className="text-sm leading-relaxed">{msg.text}</p>
                             </div>
@@ -143,15 +144,9 @@ export default function Chatbot() {
                 </div>
             )}
 
-
             <div className="group relative flex items-center">
                 {!isOpen && (
-                    <div
-                        className="absolute right-16 whitespace-nowrap rounded-lg
-            bg-slate-900 px-3 py-2 text-sm text-white
-            opacity-0 transition-all duration-300
-            group-hover:opacity-100"
-                    >
+                    <div className="absolute right-16 rounded-lg bg-slate-900 px-3 py-2 text-sm whitespace-nowrap text-white opacity-0 transition-all duration-300 group-hover:opacity-100">
                         AI Health Assistant
                     </div>
                 )}
