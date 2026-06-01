@@ -17,43 +17,6 @@ export default function ExpiryTrackerPage() {
     const [batchNumber, setBatchNumber] = useState("");
     const [isLoaded, setIsLoaded] = useState(false);
 
-<<<<<<< HEAD
-  useEffect(() => {
-    try {
-      if (typeof window !== 'undefined' && window.localStorage) {
-        const saved = window.localStorage.getItem('sahidawa_expiry_tracker');
-        if (saved) {
-          setMedicines(JSON.parse(saved));
-        }
-      }
-    } catch (e) {
-      console.error("Failed to load medicines from localStorage:", e);
-    } finally {
-      setIsLoaded(true);
-    }
-  }, []);
-
-  const saveToLocalStorage = (updatedList: Medicine[]) => {
-    setMedicines(updatedList);
-    try {
-      if (typeof window !== 'undefined' && window.localStorage) {
-        window.localStorage.setItem('sahidawa_expiry_tracker', JSON.stringify(updatedList));
-      }
-    } catch (e) {
-      console.error("Failed to save medicines to localStorage:", e);
-    }
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!name || !expiryDate) return;
-
-    const newMedicine: Medicine = {
-      id: Date.now().toString(),
-      name,
-      expiryDate,
-      batchNumber
-=======
     useEffect(() => {
         try {
             if (typeof window !== "undefined" && window.localStorage) {
@@ -78,7 +41,6 @@ export default function ExpiryTrackerPage() {
         } catch (e) {
             console.error("Failed to save medicines to localStorage:", e);
         }
->>>>>>> 519b2b0a0de261aef5e5cef52c183721974db901
     };
 
     const handleSubmit = (e: React.FormEvent) => {
