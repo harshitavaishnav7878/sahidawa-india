@@ -91,11 +91,10 @@ jobs:
             # ─────────────────────────────────────────────────────────────────
             - name: "🚀 Generate & Post LinkedIn Shoutout"
               env:
-                  # LinkedIn OAuth Credentials (add to GitHub Secrets)
-                  LINKEDIN_ACCESS_TOKEN: ${{ secrets.LINKEDIN_ACCESS_TOKEN }}
-                  LINKEDIN_ORGANIZATION_URN: ${{ secrets.LINKEDIN_ORGANIZATION_URN }}
+                  # Make.com Webhook URL (stored in GitHub Secrets)
+                  MAKE_WEBHOOK_URL: ${{ secrets.MAKE_WEBHOOK_URL }}
 
-                  # Gemini AI Key (already in repo secrets for apps/web)
+                  # Gemini AI Key (already in repo secrets)
                   GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
 
                   # PR Metadata from previous step
