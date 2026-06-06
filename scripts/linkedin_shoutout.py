@@ -383,22 +383,12 @@ def send_to_make_webhook(post_text: str, pr: dict) -> None:
     import urllib.parse
     
     # Generate a dynamic Thank You banner image URL
-    # Using Microlink Cards API for a beautiful GitHub-style banner with the contributor's avatar
-    title = "GSSoC 2026 Star Contributor"
-    desc = f"Huge thanks to {pr['author']} for scaling SahiDawa! 🚀"
-    
-    encoded_title = urllib.parse.quote(title)
-    encoded_desc = urllib.parse.quote(desc)
-    
-    cards_url = f"https://cards.microlink.io/?preset=github&title={encoded_title}&description={encoded_desc}"
-    
-    if pr.get("author_avatar"):
-        clean_avatar = pr['author_avatar'].split('?')[0]
-        cards_url += f"&image={urllib.parse.quote(clean_avatar, safe='')}"
-        
-    # Use api.microlink.io with query parameters instead of i.microlink.io (path parameters)
-    # Make.com's URL parser breaks (ENOTFOUND) if the path contains 'https%3A' 
-    image_url = f"https://api.microlink.io/?url={urllib.parse.quote(cards_url, safe='')}&screenshot=true&meta=false&embed=screenshot.url"
+    # Use official GitHub PR OpenGraph image
+    # This solves 3 critical bugs:
+    # 1. Make.com URL parser crashing on nested paths
+    # 2. LinkedIn API rejecting 302 redirects (which Microlink uses)
+    # 3. Third-party generators forcing logos (Vercel) or dropping avatars
+    image_url = f"https://opengraph.githubassets.com/1/{pr['repo']}/pull/{pr['number']}"
     
     payload = {
         "post_text": post_text,
