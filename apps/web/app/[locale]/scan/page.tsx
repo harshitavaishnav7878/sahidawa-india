@@ -3,6 +3,7 @@
 import { useState, useCallback, useRef, useEffect } from "react";
 import { SkeletonLoader } from "@/components/scanner/SkeletonLoader";
 import imageCompression from "browser-image-compression";
+import { useMedicineVerification } from "@/hooks/useMedicineVerification";
 import {
     Camera,
     ShieldCheck,
@@ -28,9 +29,7 @@ import {
     verifyMedicine,
     fuzzyMatchBrand,
     verifyMedicineByBrand,
-    checkLasaConflicts,
     type VerifyResult,
-    type LasaMatch,
     type VerifiedMedicine,
 } from "@/lib/api";
 import LasaConfirmation from "@/components/scanner/LasaConfirmation";
@@ -495,11 +494,24 @@ export default function ScanPage() {
 
     const [isScanning, setIsScanning] = useState(false);
     const [showResult, setShowResult] = useState(false);
+    const {
+        verifyResult,
+        verifyError,
+        lasaMatches,
+        showLasaConfirmation,
+        pendingVerifyResult,
+
+        setVerifyResult,
+        setVerifyError,
+        setPendingVerifyResult,
+        setShowLasaConfirmation,
+
+        handleVerify,
+        processVerificationResult,
+    } = useMedicineVerification(abortControllerRef, isMountedRef, setIsScanning, setShowResult);
     const [uploadedImage, setUploadedImage] = useState<string | null>(null);
     const [copied, setCopied] = useState(false);
     const [batchInput, setBatchInput] = useState("");
-    const [verifyResult, setVerifyResult] = useState<VerifyResult | null>(null);
-    const [verifyError, setVerifyError] = useState<string | null>(null);
     const [ocrText, setOcrText] = useState<string | null>(null);
     const [ocrConfidence, setOcrConfidence] = useState<number | null>(null);
     const [parsedBrand, setParsedBrand] = useState<string>("");
@@ -549,9 +561,6 @@ export default function ScanPage() {
     }, []);
 
     // LASA Check State
-    const [lasaMatches, setLasaMatches] = useState<LasaMatch[]>([]);
-    const [showLasaConfirmation, setShowLasaConfirmation] = useState(false);
-    const [pendingVerifyResult, setPendingVerifyResult] = useState<VerifyResult | null>(null);
     const shareCopy: VerificationShareCopy = {
         realStatus: tScan("share.real_status"),
         suspiciousStatus: tScan("share.suspicious_status"),
@@ -565,61 +574,6 @@ export default function ScanPage() {
         unknownBatch: tScan("share.unknown_batch"),
         unknownManufacturer: tScan("share.unknown_manufacturer"),
     };
-
-    const processVerificationResult = useCallback(
-        async (result: VerifyResult, fallbackBrandName?: string) => {
-            if (!result.verified) {
-                setVerifyResult(result);
-
-                void recordScanHistory(result, fallbackBrandName).catch((error) => {
-                    console.error("Failed to save scan history:", error);
-                });
-
-                setShowResult(true);
-
-                return;
-            }
-            try {
-                const medicineName = result.medicine.brand_name || fallbackBrandName;
-                if (!medicineName) {
-                    setVerifyResult(result);
-
-                    void recordScanHistory(result, fallbackBrandName).catch((error) => {
-                        console.error("Failed to save scan history:", error);
-                    });
-
-                    setShowResult(true);
-
-                    return;
-                }
-                const lasaRes = await checkLasaConflicts(medicineName);
-                if (lasaRes.hasConflicts && lasaRes.matches.length > 0) {
-                    setLasaMatches(lasaRes.matches);
-                    setPendingVerifyResult(result);
-                    setShowLasaConfirmation(true);
-                    setShowResult(true);
-                } else {
-                    setVerifyResult(result);
-
-                    void recordScanHistory(result, fallbackBrandName).catch((error) => {
-                        console.error("Failed to save scan history:", error);
-                    });
-
-                    setShowResult(true);
-                }
-            } catch (error) {
-                console.error("LASA check error:", error);
-                setVerifyResult(result);
-
-                void recordScanHistory(result, fallbackBrandName).catch((historyError) => {
-                    console.error("Failed to save scan history:", historyError);
-                });
-
-                setShowResult(true);
-            }
-        },
-        []
-    );
 
     const handleConfirmScanned = () => {
         if (pendingVerifyResult) {
@@ -672,54 +626,6 @@ export default function ScanPage() {
             }
         }
     };
-
-    const handleVerify = useCallback(
-        async (batch: string) => {
-            if (!batch.trim()) {
-                toast.error("Please enter a batch number to verify");
-                return;
-            }
-            const normalizedBatch = batch.trim();
-
-            if (abortControllerRef.current) {
-                abortControllerRef.current.abort();
-            }
-            const controller = new AbortController();
-            abortControllerRef.current = controller;
-
-            setIsScanning(true);
-            setShowResult(false);
-            setVerifyResult(null);
-            setVerifyError(null);
-
-            try {
-                const result = await verifyMedicine(normalizedBatch, controller.signal);
-                if (!isMountedRef.current || controller.signal.aborted) return;
-                await processVerificationResult(result, undefined);
-            } catch (err) {
-                if (!isMountedRef.current || controller.signal.aborted) return;
-                const errorMsg = err instanceof Error ? err.message : "Verification failed";
-                if (errorMsg === "Request was cancelled.") {
-                    return;
-                }
-                setVerifyError(errorMsg);
-                void saveScanHistory({
-                    id: crypto.randomUUID(),
-                    timestamp: Date.now(),
-                    medicineName: batch.trim() || "Unknown Medicine",
-                    status: "SUSPICIOUS",
-                }).catch((error) => {
-                    console.error("Failed to save scan history:", error);
-                });
-                setShowResult(true);
-            } finally {
-                if (isMountedRef.current && !controller.signal.aborted) {
-                    setIsScanning(false);
-                }
-            }
-        },
-        [processVerificationResult]
-    );
 
     // Keep handleVerifyRef current
     useEffect(() => {
