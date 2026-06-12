@@ -64,6 +64,35 @@ jobs:
             
             if (!isRequest) return;
 
+            // NEW: Block empty assignment requests and delete them
+            const cleanedBody = commentBody.replace(/\r?\n|\r/g, ' ').replace(/\/assign|please assign me|assign me/ig, '').trim();
+            if (cleanedBody.length < 30) {
+              core.info('Rejecting assignment request due to lack of implementation approach: ' + commentBody);
+              await github.rest.issues.createComment({
+                owner: repo.owner, repo: repo.repo, issue_number: issueNumber,
+                body: [
+                  '❌ **Assignment Request Denied**',
+                  '',
+                  'Hi @' + commenter + ', we have updated our contribution guidelines to prevent spam.',
+                  'To be assigned to an issue, you **must provide a brief implementation approach**.',
+                  '',
+                  'Please reply with a clear description of how you plan to solve this issue (e.g., what files you will touch, logic changes) along with `/assign`.',
+                  'Your current request was too short and has been ignored.'
+                ].join('\n')
+              });
+              
+              // Delete the spammy comment to keep the thread clean
+              try {
+                await github.rest.issues.deleteComment({
+                  owner: repo.owner, repo: repo.repo, comment_id: context.payload.comment.id
+                });
+                core.info('Deleted the empty assignment request comment.');
+              } catch (err) {
+                core.warning('Could not delete the empty comment: ' + err.message);
+              }
+              return;
+            }
+
             // Skip maintainers/owners from being auto-assigned via comments
             try {
               const { data: perm } = await github.rest.repos.getCollaboratorPermissionLevel({
@@ -96,6 +125,30 @@ jobs:
               }
             } catch (err) {
               core.warning('Could not check permissions for issue author @' + issueAuthor + ': ' + err.message);
+            }
+
+            // ── NEW: Restrict initial assignment to the issue creator ──
+            const hasOpenForAllLabel = (issueData.data.labels || []).some(l => 
+              (typeof l === 'string' ? l : l.name).toLowerCase() === 'status: open-for-all'
+            );
+
+            if (isUnassigned && !hasOpenForAllLabel) {
+              if (commenter !== issueAuthor) {
+                core.info('Rejecting assignment because commenter is not the issue author and it is not open-for-all.');
+                await github.rest.issues.createComment({
+                  owner: repo.owner, repo: repo.repo, issue_number: issueNumber,
+                  body: [
+                    '❌ **Assignment Request Denied**',
+                    '',
+                    'Hi @' + commenter + ', currently **only the creator of this issue (@' + issueAuthor + ')** can claim it.',
+                    'If they claim it but become inactive, the bot will unassign them and this issue will become open for anyone to claim.'
+                  ].join('\n')
+                });
+                try {
+                  await github.rest.issues.deleteComment({ owner: repo.owner, repo: repo.repo, comment_id: context.payload.comment.id });
+                } catch(e) {}
+                return;
+              }
             }
 
             // ── 2a. Enforce 3-issue cap ─────────────────────────────────────
@@ -167,6 +220,48 @@ jobs:
               assignees: [commenter]
             });
             core.info('\u2705 Assigned @' + commenter + ' to #' + issueNumber);
+
+            // ── NEW: Auto-Cleanup on Re-Assignment ──
+            if (hasOpenForAllLabel) {
+              // Remove the open-for-all label
+              try {
+                await github.rest.issues.removeLabel({
+                  owner: repo.owner, repo: repo.repo, issue_number: issueNumber, name: 'status: open-for-all'
+                });
+              } catch(e) {}
+              
+              // Automated Cleanup of previous spam comments
+              try {
+                core.info('Running automated cleanup on issue #' + issueNumber);
+                const comments = await github.paginate(github.rest.issues.listComments, {
+                  owner: repo.owner, repo: repo.repo, issue_number: issueNumber, per_page: 100
+                });
+                
+                for (const c of comments) {
+                  if (c.id === context.payload.comment.id) continue;
+
+                  const isBot = c.user && c.user.login === 'github-actions[bot]';
+                  const cBody = c.body || '';
+                  
+                  let shouldDelete = false;
+                  if (isBot && cBody.match(/(⚠️|You've been assigned|Assignment Request Denied|already assigned|Auto-unassigned|inactivity)/i)) {
+                    shouldDelete = true;
+                  } 
+                  else if (!isBot) {
+                    const cCleaned = cBody.replace(/\r?\n|\r/g, ' ').replace(/\/assign|please assign me|assign me/ig, '').trim();
+                    if (cCleaned.length < 30 && cBody.match(/(\/assign|assign me)/i)) {
+                      shouldDelete = true;
+                    }
+                  }
+                  
+                  if (shouldDelete) {
+                    await github.rest.issues.deleteComment({ owner: repo.owner, repo: repo.repo, comment_id: c.id });
+                  }
+                }
+              } catch(e) {
+                core.warning('Failed automated cleanup: ' + e.message);
+              }
+            }
 
             // ── 2d. Determine deadline from labels ──────────────────────────
             const labels = (issueData.data.labels || []).map(l =>

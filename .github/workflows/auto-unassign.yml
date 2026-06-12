@@ -143,6 +143,14 @@ jobs:
                     await github.rest.issues.removeAssignees({
                       owner, repo, issue_number: issue.number, assignees: [assignee]
                     });
+                    // NEW: Add 'status: open-for-all' label so others can claim it
+                    try {
+                      await github.rest.issues.addLabels({
+                        owner, repo, issue_number: issue.number, labels: ['status: open-for-all']
+                      });
+                    } catch (labelErr) {
+                      core.warning(`Failed to add open-for-all label: ${labelErr.message}`);
+                    }
                     try {
                       await github.rest.issues.createComment({
                         owner, repo, issue_number: issue.number,
