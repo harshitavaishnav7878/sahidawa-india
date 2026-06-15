@@ -4,7 +4,7 @@ import { NextResponse } from "next/server";
 import { getSupabaseUrl, getSupabaseAnonKey } from "@/lib/env";
 
 export async function POST() {
-    const cookieStore = cookies();
+    const cookieStore = await cookies();
 
     const supabase = createServerClient(getSupabaseUrl(), getSupabaseAnonKey(), {
         cookies: {
