@@ -150,12 +150,25 @@ export default function Navbar() {
         setIsProfileOpen(false);
         setIsMenuOpen(false);
         try {
+            await fetch("/api/auth/signout", { method: "POST" });
             const supabase = createBrowserClient(getSupabaseUrl(), getSupabaseAnonKey());
             await supabase.auth.signOut();
         } catch (error) {
             console.error("Logout error:", error);
         } finally {
-            localStorage.removeItem("sb-access-token");
+            // Forcefully clear all Supabase-related keys
+            Object.keys(localStorage).forEach((key) => {
+                if (key.startsWith("sb-")) localStorage.removeItem(key);
+            });
+            Object.keys(sessionStorage).forEach((key) => {
+                if (key.startsWith("sb-")) sessionStorage.removeItem(key);
+            });
+            // Clear all cookies as well
+            document.cookie.split(";").forEach((c) => {
+                document.cookie = c
+                    .replace(/^ +/, "")
+                    .replace(/=.*/, `=;expires=${new Date(0).toUTCString()};path=/`);
+            });
             window.location.href = "/";
         }
     };
