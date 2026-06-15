@@ -444,10 +444,7 @@ export default function SearchBar({ dark = false, onSearchChange }: SearchBarPro
                 error={error}
                 noResults={noResults}
                 onRetry={() => fetchSuggestions(query.trim())}
-                isHistory={query.trim() === ""}
-                historyItems={history}
-                onPinToggle={togglePin}
-                onClearHistory={clearHistory}
+                query={query.trim()}
             />
         </div>
     );
