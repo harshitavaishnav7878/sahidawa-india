@@ -67,6 +67,7 @@ interface MatchedInteraction {
     description: string;
     clinical_recommendation: string;
     source: string;
+    verified: boolean;
 }
 
 const localInteractions: LocalInteraction[] = [
