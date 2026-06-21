@@ -1,3 +1,5 @@
+import { toast } from "sonner";
+
 export interface RetryConfig {
     maxRetries?: number;
     initialDelayMs?: number;
@@ -5,8 +7,6 @@ export interface RetryConfig {
     backoffMultiplier?: number;
     shouldRetry?: (error: Error | Response, attemptNumber: number) => boolean;
 }
-
-import { toast } from "sonner";
 
 export interface FetchOptions extends RequestInit {
     timeout?: number;
@@ -156,9 +156,6 @@ export async function fetchWithRetry(
         }
     }
 
-    if (typeof window !== "undefined") {
-        toast.error("Network Request Failed. Please try again.");
-    }
     throw lastError || new Error("All retry attempts failed");
 }
 
