@@ -92,10 +92,7 @@ reportsRouter.post(
         const data = parsed.data;
 
         try {
-            const rawIp =
-                req.headers["x-forwarded-for"]?.toString().split(",")[0]?.trim() ||
-                req.socket.remoteAddress;
-            const ipAddress = anonymizeIp(rawIp);
+            const ipAddress = anonymizeIp(req.ip);
             const validationPayload = {
                 medicineName: data.medicineName,
                 manufacturer: data.manufacturer,
