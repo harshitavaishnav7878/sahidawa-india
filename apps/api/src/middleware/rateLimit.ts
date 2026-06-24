@@ -19,11 +19,7 @@ export const batchLimiter = rateLimit({
     standardHeaders: true,
     legacyHeaders: false,
     keyGenerator: (req) => {
-        return (
-            req.headers["x-forwarded-for"]?.toString().split(",")[0]?.trim() ||
-            req.socket.remoteAddress ||
-            "unknown"
-        );
+        return req.ip || req.socket.remoteAddress || "unknown";
     },
     handler: (_req, res) => {
         res.status(429).json({
@@ -54,11 +50,7 @@ export const reportLimiter = rateLimit({
     standardHeaders: true,
     legacyHeaders: false,
     keyGenerator: (req) => {
-        return (
-            req.headers["x-forwarded-for"]?.toString().split(",")[0]?.trim() ||
-            req.socket.remoteAddress ||
-            "unknown"
-        );
+        return req.ip || req.socket.remoteAddress || "unknown";
     },
     handler: (_req, res) => {
         res.status(429).json({
@@ -104,11 +96,7 @@ export const interactionCheckLimiter = rateLimit({
     standardHeaders: true,
     legacyHeaders: false,
     keyGenerator: (req) => {
-        return (
-            req.headers["x-forwarded-for"]?.toString().split(",")[0]?.trim() ||
-            req.socket.remoteAddress ||
-            "unknown"
-        );
+        return req.ip || req.socket.remoteAddress || "unknown";
     },
     handler: (_req, res) => {
         res.status(429).json({
