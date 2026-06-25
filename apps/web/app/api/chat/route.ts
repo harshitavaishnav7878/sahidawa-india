@@ -5,15 +5,21 @@ import { rateLimit } from "@/lib/rateLimit";
 import { BASE_PROMPT } from "@/lib/chatPrompts";
 import { structuredLog } from "@/lib/structuredLogger";
 import { ChatRoles, ChatRole } from "@/lib/constants";
-import { get_encoding } from "tiktoken";
 import crypto from "crypto";
+
+// Lightweight token-count approximation — avoids loading the tiktoken
+// WASM encoder on every request. Exact accuracy isn't required here;
+// this is only used to keep context within a safe token budget.
+function estimateTokens(text: string): number {
+    const words = text.trim().split(/\s+/).filter(Boolean).length;
+    return Math.ceil(words * 1.33);
+}
 
 export function trimHistoryByTokens(
     messages: ChatMessage[],
     maxTokens: number
 ): { trimmedMessages: ChatMessage[]; droppedMessages: ChatMessage[] } {
     try {
-        const enc = get_encoding("cl100k_base");
         const trimmed: ChatMessage[] = [];
         const dropped: ChatMessage[] = [];
         let currentTokens = 0;
@@ -21,7 +27,7 @@ export function trimHistoryByTokens(
         for (let i = messages.length - 1; i >= 0; i--) {
             const msg = messages[i];
             const text = msg.text || msg.content || "";
-            const tokens = enc.encode(text).length;
+            const tokens = estimateTokens(text);
             const msgTokens = tokens + 4; // overhead buffer
 
             if (currentTokens + msgTokens > maxTokens && trimmed.length > 0) {
@@ -33,7 +39,6 @@ export function trimHistoryByTokens(
             trimmed.unshift(msg);
         }
 
-        enc.free();
         return { trimmedMessages: trimmed, droppedMessages: dropped };
     } catch (e) {
         return { trimmedMessages: messages.slice(-50), droppedMessages: [] };
